@@ -131,7 +131,7 @@ MathJax.Hub.Config({
 
 <br>
 <p>
-<center><h4>Aug 9, 2021</h4></center> <!-- date -->
+<center><h4>Aug 12, 2021</h4></center> <!-- date -->
 <br>
 <p>
 <b>Learning objectives.</b>
@@ -216,7 +216,7 @@ Execute the following line of code
 <p>
 
 <!-- code=python (!bc pypro) typeset with pygments style "default" -->
-<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%"><span></span>df <span style="color: #666666">=</span> pd<span style="color: #666666">.</span>read_csv(<span style="color: #BA2121">&#39;../data/corona_data.dat&#39;</span>,sep<span style="color: #666666">=</span><span style="color: #BA2121">&#39;</span><span style="color: #BB6622; font-weight: bold">\t</span><span style="color: #BA2121">&#39;</span>)
+<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%; margin: 0;"><span></span>df <span style="color: #666666">=</span> pd<span style="color: #666666">.</span>read_csv(<span style="color: #BA2121">&#39;../data/corona_data.dat&#39;</span>,sep<span style="color: #666666">=</span><span style="color: #BA2121">&#39;</span><span style="color: #BB6622; font-weight: bold">\t</span><span style="color: #BA2121">&#39;</span>)
 </pre></div>
 <ul>
 <li> This command reads the content of <code>corona_data.dat</code> into a <a href="https://pandas.pydata.org/pandas-docs/stable/user_guide/dsintro.html" target="_self">DataFrame</a>, a DataFrame is basically a two dimensional labeled data structure very similar to an excel sheet. For more information you can check out the <a href="https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html" target="_self">documentation</a></li>
@@ -231,7 +231,7 @@ The <code>df</code> DataFrame contains all COVID-19 data from every country, run
 <p>
 
 <!-- code=python (!bc pypro) typeset with pygments style "default" -->
-<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%"><span></span>df<span style="color: #666666">=</span>df[df[<span style="color: #BA2121">&#39;LOCATION&#39;</span>] <span style="color: #666666">==</span> <span style="color: #BA2121">&#39;Afghanistan&#39;</span>]
+<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%; margin: 0;"><span></span>df<span style="color: #666666">=</span>df[df[<span style="color: #BA2121">&#39;LOCATION&#39;</span>] <span style="color: #666666">==</span> <span style="color: #BA2121">&#39;Afghanistan&#39;</span>]
 </pre></div>
 <ul>
 <li> explain what the code does.</li>
@@ -453,7 +453,7 @@ where \( S_0=S(0) \), and thus \( S_0+I_0=N \). Hint: replace \( I(t) \) with \(
 <ul>
 <li> Make a Python function that solves equations <a href="#mjx-eqn-5">(5)</a> and <a href="#mjx-eqn-6">(6)</a>.</li>
 <li> The function should take the following input arguments: a Numpy array of times, the initial number of susceptible people, the initial number of infected people, and a value for \( \beta \).</li>
-<li> The function should return a 2-dimensional Numpy array, where the first column holds the vector of susceptible individuals at each time step, and the second column holds the vector of infected people.</li>
+<li> The function should return two Numpy arrays, where the first array holds the vector of susceptible individuals at each time step, and the second array holds the vector of infected people.</li>
 </ul>
 
 The following lines of code exemplifies how such a function could be used by
@@ -462,14 +462,8 @@ calling code:
 <p>
 
 <!-- code=python (!bc pycod) typeset with pygments style "default" -->
-<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%"><span></span>solution <span style="color: #666666">=</span> calc_SI_model(report_times, S0, I0, beta)
-St <span style="color: #666666">=</span> solution[:, <span style="color: #666666">0</span>]  <span style="color: #408080; font-style: italic"># 1-dim. array holding S(t)</span>
-It <span style="color: #666666">=</span> solution[:, <span style="color: #666666">1</span>]  <span style="color: #408080; font-style: italic"># 1-dim. array holding I(t)</span>
+<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%; margin: 0;"><span></span>S,I <span style="color: #666666">=</span> calc_SI_model(report_times, S0, I0, beta)
 </pre></div>
-<p>
-Tip: It might be useful to check out the function
-<a href="https://numpy.org/doc/stable/reference/generated/numpy.column_stack.html" target="_self">column\_stack</a>.
-
 <p>
 <b>Part 2.</b>
 
