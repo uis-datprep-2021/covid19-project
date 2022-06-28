@@ -1,4 +1,4 @@
-# COVID-19 Project
+# UiS DATPREP - COVID-19 Project
 
 In this project we are modelling the first 250 days of the Corona outbreak. The model we are using are the simplest possible model, and you are encouraged to reflect on the limitations. All modelling projects consists (usually) of two parts, the first part is to get an overview of the data, and the second part is to develop a suitable model that can be compared or tuned to parts of the data.
  
