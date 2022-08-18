@@ -1,0 +1,835 @@
+<!--
+File automatically generated using DocOnce (https://github.com/doconce/doconce/):
+doconce format html covid19.do.txt --html_style=solarized
+-->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="DocOnce: https://github.com/doconce/doconce/" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="COVID-19: Comparing data to a simple compartment model">
+<title>COVID-19: Comparing data to a simple compartment model</title>
+<link href="https://raw.githubusercontent.com/doconce/doconce/main/bundled/html_styles/style_solarized_box/css/solarized_light_code.css" rel="stylesheet" type="text/css" title="light"/>
+<script src="https://raw.githubusercontent.com/doconce/doconce/main/bundled/html_styles/style_solarized_box/js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<style type="text/css">
+/* solarized style */
+body {
+  margin: 5;
+  padding: 0;
+  border: 0; /* Remove the border around the viewport in old versions of IE */
+  width: 100%;
+  background: #fdf6e3;
+  min-width: 600px;	/* Minimum width of layout - remove if not required */
+  font-family: Verdana, Helvetica, Arial, sans-serif;
+  font-size: 1.0em;
+  line-height: 1.3em;
+  color: #657b83;
+}
+a { color: #859900; text-decoration: underline; }
+a:hover, a:active { outline:none }
+a, a:active, a:visited { color: #859900; }
+a:hover { color: #268bd2; }
+h1, h2, h3 { margin:.8em 0 .2em 0; padding:0; line-height: 125%; }
+h2 { font-variant: small-caps; }
+tt, code { font-family: monospace, sans-serif; box-shadow: none; }
+hr { border: 0; width: 80%; border-bottom: 1px solid #aaa; }
+p { text-indent: 0px; }
+p.caption { width: 80%; font-style: normal; text-align: left; }
+hr.figure { border: 0; width: 80%; border-bottom: 1px solid #aaa; }
+.alert-text-small   { font-size: 80%;  }
+.alert-text-large   { font-size: 130%; }
+.alert-text-normal  { font-size: 90%;  }
+.alert {
+  padding:8px 35px 8px 14px; margin-bottom:18px;
+  text-shadow:0 1px 0 rgba(255,255,255,0.5);
+  border:1px solid #93a1a1;
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  color: #555;
+  background-color: #eee8d5;
+  background-position: 10px 5px;
+  background-repeat: no-repeat;
+  background-size: 38px;
+  padding-left: 55px;
+  width: 75%;
+ }
+.alert-block {padding-top:14px; padding-bottom:14px}
+.alert-block > p, .alert-block > ul {margin-bottom:1em}
+.alert li {margin-top: 1em}
+.alert-block p+p {margin-top:5px}
+.alert-notice { background-image: url(https://raw.githubusercontent.com/doconce/doconce/bundled/html_images/small_yellow_notice.png); }
+.alert-summary  { background-image:url(https://raw.githubusercontent.com/doconce/doconce/main/bundled/html_images/small_yellow_summary.png); }
+.alert-warning { background-image: url(https://raw.githubusercontent.com/doconce/doconce/main/bundled/html_images/small_yellow_warning.png); }
+.alert-question {background-image:url(https://raw.githubusercontent.com/doconce/doconce/main/bundled/html_images/small_yellow_question.png); }
+div { text-align: justify; text-justify: inter-word; }
+.tab {
+  padding-left: 1.5em;
+}
+div.toc p,a {
+  line-height: 1.3;
+  margin-top: 1.1;
+  margin-bottom: 1.1;
+}
+</style>
+</head>
+
+<!-- tocinfo
+{'highest level': 1,
+ 'sections': [('Downloading COVID-19 statistics',
+               1,
+               None,
+               'downloading-covid-19-statistics'),
+              ('Exercise 1: Loading data into data frames',
+               1,
+               None,
+               'exercise-1-loading-data-into-data-frames'),
+              ('Exercise 2: Visualizing data',
+               1,
+               None,
+               'exercise-2-visualizing-data'),
+              ('Modelling COVID-19: The SI-model',
+               1,
+               None,
+               'modelling-covid-19-the-si-model'),
+              ('Exercise 3: [OPTIONAL] Analytical solution',
+               1,
+               'exercise:no_hope',
+               'exercise:no_hope'),
+              ('Exercise 4: Is the model any good?',
+               1,
+               None,
+               'exercise-4-is-the-model-any-good'),
+              ('Exercise 5: Extending the model',
+               1,
+               None,
+               'exercise-5-extending-the-model'),
+              ('Bibliography', 1, None, 'bibliography')]}
+end of tocinfo -->
+
+<body>
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: {
+     equationNumbers: {  autoNumber: "AMS"  },
+     extensions: ["AMSmath.js", "AMSsymbols.js", "autobold.js", "color.js"]
+  }
+});
+</script>
+<script type="text/javascript" async
+ src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- ------------------- main content ---------------------- -->
+<center>
+<h1>COVID-19: Comparing data to a simple compartment model</h1>
+</center>  <!-- document title -->
+
+<!-- author(s): Aksel Hiorth, and Oddbj&#248;rn N&#248;dland -->
+<center>
+<b>Aksel Hiorth</b> 
+</center>
+<center>
+<b>Oddbj&#248;rn N&#248;dland</b> 
+</center>
+<!-- institution(s) -->
+<br>
+<center>
+<h4>August 2022</h4>
+</center> <!-- date -->
+<br>
+
+<p>
+<b>Learning objectives.</b>
+By completing this project, the student will:
+</p>
+<ul>
+<li> Learn to import data into <a href="https://pandas.pydata.org" target="_self">pandas</a> DataFrames.</li>
+<li> Write simple functions to generate plots, and inspect data visually.</li>
+<li> Constrain model parameters by comparing model output with data.</li>
+<li> Reflect on strengths and weaknesses of simple models for complex phenomena.</li>
+</ul>
+<p>
+<b>Project overview.</b>
+In this introductory project we are modelling the first 250 days of the Corona
+virus (SARS-CoV-2) outbreak.
+The model we are going to use is probably the simplest one possible,
+and you are encouraged to keep this in mind as you reflect on what the model
+can, and cannot, say.
+</p>
+
+<p>All later projects in the course MOD510 will look very much like this one.
+Therefore, working on this project should give you a good start.
+</p>
+<h1 id="downloading-covid-19-statistics">Downloading COVID-19 statistics </h1>
+
+<p>Data on the Corona virus are readily available, e.g., good visualizations
+of the global situation can be found at the
+<a href="https://coronavirus.jhu.edu/map.html" target="_self">Johns Hopkins Coronavirus Resource Center</a>.
+</p>
+
+<p>For the purpose of this project, we have already downloaded country-level data
+for you, and stored it in a processed format in the text file <code>data/corona_data.dat</code>.
+Data for the Hubei province in China, where it is believed that the virus
+first arose <a href="#xiao2021animal">[1]</a> <a href="#pekar2022molecular">[2]</a> <a href="#worobey2022huanan">[3]</a>,
+is included in the text file.
+The reason for doing so is that while the original data were organized by date
+since January 22 2020, we would like to plot the data versus the time of
+<em>the first confirmed case</em>. This makes it easier to apply the same model to
+different locations.
+Note that we have <em>not</em> downloaded the most recent data. If you wish to
+inspect the latest data, you are encouraged to checkout the Github
+repository <a href="https://github.com/CSSEGISandData/COVID-19" target="_self">Center for Systems Science and Engineering (CSSE) at Johns Hopkins University</a>.
+</p>
+
+<center> <!-- figure label: --> <div id="fig:jh"></div> <!-- FIGURE -->
+<hr class="figure">
+<center>
+<p class="caption">Figure 1: A screenshot of the COVID-19 Dashboard from Johns Hopkins Coronavirus Resource Center.  <!-- caption label: fig:jh --></p>
+</center>
+<p><img src="fig-covid19/dashboard_covid19.jpg" width="800" align="bottom"></p>
+</center>
+
+<h1 id="exercise-1-loading-data-into-data-frames">Exercise 1: Loading data into data frames  </h1>
+
+<p>Next, we want you to get familiar with the data.
+The relevant text file, <code>corona_data.dat</code>, is located in a separate directory
+called <code>data</code>. We are going to use the <a href="https://pandas.pydata.org/" target="_self">pandas library</a>
+to read the data from the text file into a
+<a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html" target="_self">DataFrame object</a>.
+Pandas is a very flexible library, but we will only use it in a very
+limited way in this project.
+</p>
+
+<div class="alert alert-block alert-notice alert-text-normal">
+<b><font color="blue">A note regarding the use of libraries</font></b>
+<p>
+<p>There are many Python libraries out there, but a good advice is to use no
+more libraries than necessary. For scientific computing there are a few libraries
+that are used by almost everyone, the most important being <a href="https://numpy.org" target="_self">NumPy</a>.
+Numpy is based on well-optimized C code, and it is designed to perform heavy
+numerical computations faster than native Python.
+If you see code that uses a different library to achieve something,
+ask yourself if the same thing could have been done with Numpy.
+Another important reason to prefer Numpy is that the syntax is known
+to almost everyone, which makes it quite easy for other people to read and
+understand your code by visual inspection.
+</p>
+
+<p>Of course, some tasks are best performed by other libraries. As you will see in
+this introductory project, <a href="https://pandas.pydata.org/" target="_self">pandas</a> lets you read
+data from files using very few lines of code.
+When doing more advanced tasks involving the file system and installed programs
+on your computer, the <a href="https://docs.python.org/3/library/pathlib.html" target="_self">pathlib library</a>
+is very powerful, as is the <a href="https://docs.python.org/3/library/os.html" target="_self">os module</a>.
+For plotting, <a href="https://matplotlib.org" target="_self">matplotlib</a> is where most
+Python programmers begin their journey.
+</p>
+</div>
+
+
+<p>
+<b>Part 1.</b>
+</p>
+
+<p>Execute the following lines of code</p>
+
+<!-- code=python (!bc pypro) typeset with pygments style "perldoc" -->
+<div class="cell border-box-sizing code_cell rendered">
+  <div class="input">
+    <div class="inner_cell">
+      <div class="input_area">
+        <div class="highlight" style="background: #eeeedd">
+  <pre style="line-height: 125%;">df = pd.read_csv(<span style="color: #CD5555">&quot;../data/corona_data.dat&quot;</span>, sep=<span style="color: #CD5555">&quot;\t&quot;</span>)
+<span style="color: #658b00">print</span>(df)  <span style="color: #228B22"># In Jupyter notebooks, you get nice output with just: df</span>
+</pre>
+</div>
+      </div>
+    </div>
+  </div>
+  <div class="output_wrapper">
+    <div class="output">
+      <div class="output_area">
+        <div class="output_subarea output_stream output_stdout output_text">          
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<ul>
+<li> What does the code do? Compare the output with what you see if you open the file <code>corona_data.dat</code> in a text editor.</li>
+<li> What happens if you remove <code>sep=&quot;\t&quot;</code>?</li>
+</ul>
+<p>
+<b>Part 2.</b>
+</p>
+
+<p>So far, we have read COVID-19 data from every country, however we are not
+usually only interested in a subset of the data. Run the following code:
+</p>
+
+<!-- code=python (!bc pypro) typeset with pygments style "perldoc" -->
+<div class="cell border-box-sizing code_cell rendered">
+  <div class="input">
+    <div class="inner_cell">
+      <div class="input_area">
+        <div class="highlight" style="background: #eeeedd">
+  <pre style="line-height: 125%;">is_specific_country = (df[<span style="color: #CD5555">&quot;LOCATION&quot;</span>] == <span style="color: #CD5555">&quot;Afghanistan&quot;</span>)
+df = df[is_specific_country]
+<span style="color: #658b00">print</span>(df)
+</pre>
+</div>
+      </div>
+    </div>
+  </div>
+  <div class="output_wrapper">
+    <div class="output">
+      <div class="output_area">
+        <div class="output_subarea output_stream output_stdout output_text">          
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<ul>
+<li> Explain what the code does.</li>
+<li> What kind of an object is <code>df</code>? (Find out how you can get Python to tell it to you if you did not know it already).</li>
+</ul>
+<p>
+<b>Part 3.</b>
+</p>
+
+<ul>
+<li> Write a Python function that takes as input 1) the full DateFrame with data and 2) a specific place country or province. The function should only return the data for that location.</li>
+</ul>
+<p>Alternatively, you may try to specify the path to the datafile as input
+argument instead of assuming you already have a DataFrame.
+</p>
+
+<ul>
+<li> Can you think of any disadvantages of doing this?</li>
+</ul>
+<div class="alert alert-block alert-notice alert-text-normal">
+<b><font color="blue">A note regarding copying code</font></b>
+<p>
+
+<p>To copy and paste code can often help you get quickly started on a programming
+problem. We all do it. However, if you really want to mature as a programmer,
+you should try to limit how often you do it. First, if you are not
+careful about "borrowing" code from others, it could have legal repercussions.
+Second, copying code might prevent you from achieving a good understanding of
+the problem you are working on: especially when using code developed by others,
+you should strive to <em>understand</em> the individual steps of the code, as far as
+it is practical to do so (usually, you do not have to worry about internal
+implementation details of the core libraries you are using).
+If you are able to get a good understanding of what a piece of code does, you
+will later be able extend it in new directions, and/or to simplify it by
+removing unnecessary steps.
+</p>
+
+<p>Even when you write all the code yourself, you may find yourself copying and
+pasting the same (or very similar) code many times over. This is usually a
+<a href="https://en.wikipedia.org/wiki/Don%27t_repeat_yourself" target="_self">clear sign</a> that you
+should think about making a function.
+By moving repeated code blocks into a function, you can reduce code duplication.
+If you ever need to make a change to a function (from experience, this is very likely),
+all places making use of the function will automatically be updated.
+In other words, the code becomes more maintainable than if you had to change
+the code manually in many places at once.
+</p>
+</div>
+
+<h1 id="exercise-2-visualizing-data">Exercise 2: Visualizing data  </h1>
+
+<p>To make figures, we suggest that you use <a href="https://matplotlib.org/" target="_self">Matplotlib</a>.</p>
+
+<div class="alert alert-block alert-notice alert-text-normal">
+<b>Plotting with pandas?</b>
+<p>
+<p>Note that pandas have some built-in functionality to make plots.
+This functionality is <a href="https://pandas.pydata.org/docs/getting_started/intro_tutorials/04_plotting.html" target="_self">built on top of matplotlib</a>,
+and it can sometimes be useful for quickly creating a figure without having to
+type so much. However, as you spend more time fine-tuning plots, you might
+conclude that it is better to work directly with matplotlib.
+</p>
+</div>
+
+
+<p>
+<b>Part 1.</b>
+</p>
+
+<ul>
+<li> Use the function you made in the previous exercise to inspect the data for Norway. Specifically, look at the columns <code>ELAPSED_TIME_SINCE_OUTBREAK</code> and <code>CONFIRMED</code>.</li>
+<li> What kind of an object is each of the columns? (assuming all of the data are stored in a DataFrame)</li>
+<li> Make a 2D <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.scatter.html" target="_self">scatter plot</a> showing the number of confirmed cases of COVID-19 in Norway versus time.</li>
+</ul>
+<p>
+<b>Part 2.</b>
+</p>
+
+<ul>
+<li> Create a new function which takes as one input argument the name of a country or province, and makes a scatter plot of the number of confirmed COVID-19 cases versus time for that country or province.</li>
+<li> When writing this second function, try to re-use the one you made previously.</li>
+</ul>
+<p>Tip: For increased flexibility in making plots, it may be a good idea to
+return either a <a href="https://matplotlib.org/stable/api/figure_api.html" target="_self">figure</a>
+or <a href="https://matplotlib.org/stable/api/axes_api.html" target="_self">Axes</a> object from the
+function. If you do that, you can continue to customize the figure outside
+the function.
+</p>
+
+<div class="alert alert-block alert-notice alert-text-normal">
+<b><font color="blue">Separation of concerns</font></b>
+<p>
+
+<p>It can be challenging to design good functions. A rule-of-thumb
+is that functions should not have too many responsibilities; ideally,
+<a href="https://en.wikipedia.org/wiki/Separation_of_concerns" target="_self">any one function should concentrate on doing one thing very well, and not too
+many things at once</a>.
+As an example, when working with data it is almost always a good idea to separate
+the pre-processing of raw data from code that works with formatted data.
+Similarly, it is usually not a good idea to mix code that does mathematical model
+calculations with code that makes plots.
+</p>
+
+<p>Taken to the extreme, some advocates of <a href="https://en.wikipedia.org/wiki/Functional_programming" target="_self">functional programming</a>
+recommend always using <em>pure functions</em>, that is, functions which always return
+the same output given the same input, and which have no
+<a href="https://en.wikipedia.org/wiki/Side_effect_(computer_science)" target="_self">side-effects</a>.
+In practice, this will most likely not be feasible to achieve, but it is worth
+thinking about.  If you are able to create a small library of reusable pure functions,
+life can become so much easier!
+</p>
+</div>
+
+
+<p>
+<b>Part 3.</b>
+</p>
+
+<ul>
+<li> Apply the function you just made to create a scatter plot for a different country than Norway. Include in this new figure a suitable title as well as axis labels; especially labels are important in order for others to understand what you are plotting.</li>
+</ul>
+<p>To add the title and labels, you have essentially three options:</p>
+<ol>
+<li> Use the input name of the country / province in the title and hard-code the rest inside the function.</li>
+<li> Let the user pass in a title and/or axis labels as additional function arguments.</li>
+<li> Do not change the function at all, instead modify the figure object after returning it from the function.</li>
+</ol>
+<p>Discuss advantages and drawbacks of each of the three mentioned approaches.</p>
+
+<p>
+<b>Part 4.</b>
+</p>
+
+<ul>
+<li> Make a plot showing the number of confirmed cases since the time of the first outbreak in the Hubei province in China.</li>
+<li> Compare it to the data for Norway, either in the same figure, or in two separate figures side-by-side.</li>
+</ul>
+<p>Figure <a href="#fig:hubei_vs_norway">2</a> shows a possible solution.</p>
+
+<center> <!-- figure label: --> <div id="fig:hubei_vs_norway"></div> <!-- FIGURE -->
+<hr class="figure">
+<center>
+<p class="caption">Figure 2: COVID-19 data for Hubei and Norway.  <!-- caption label: fig:hubei_vs_norway --></p>
+</center>
+<p><img src="fig-covid19/hubei_vs_norway.png" align="bottom"></p>
+</center>
+
+<h1 id="modelling-covid-19-the-si-model">Modelling COVID-19: The SI-model </h1>
+
+<p>Compartment models <a href="#kermack1927contribution">[4]</a> are widely used to study
+how an epidemic disease might spread in a population.
+In these models, the total population is partitioned into compartments based on
+a set of possible "disease states", such as "Susceptible", "Infected",
+"Recovered", and "Dead". Differential equations are set up
+to describe how individuals "flow" from one compartment to another.
+The equations can be either deterministic or stochastic.
+While stochastic models are more realistic, they are also more challenging
+to use and interpret. In this project, we will only consider deterministic
+models.
+</p>
+
+<p>We start by studying the SI-model, which consists of only two compartments:</p>
+<ol>
+<li> \( S \) - Susceptible: people at risk of infection.</li>
+<li> \( I \) - Infected.</li>
+</ol>
+<center> <!-- figure label: --> <div id="fig:human_zombies"></div> <!-- FIGURE -->
+<hr class="figure">
+<center>
+<p class="caption">Figure 3: The SI-model: All individuals are either "Susceptible" or "Infected". Once you become sick, there is no recovery.  <!-- caption label: fig:human_zombies --></p>
+</center>
+<p><img src="fig-covid19/SI.png" width="800" align="bottom"></p>
+</center>
+
+<p>Let \( N \) denote the total population size. For each time \( t \), let \( S(t) \) denote
+the number of susceptible people, and \( I(t) \) the number of infected people.
+To develop a model, we need to calculate the rate of flow between the
+two compartments in figure <a href="#fig:human_zombies">3</a>.
+We start by making some observations:
+</p>
+<ul>
+<li> During each time interval \( \Delta{t} \), a certain number of individuals will come into contact with each other.</li>
+<li> We only care about susceptible (healthy) - infected encounters, because that is the only scenario in which the number of infected people can increase.</li>
+<li> Whenever a healthy person meets an infected person, there is a certain probability that the healthy person becomes infected.</li>
+</ul>
+<p>We shall take our imagined population to be <em>well mixed</em>,
+meaning that pairs of individuals interact with equal probability.
+Let \( \mathcal{C}(N) \) denote the rate at which <em>any</em> individual in the
+population contacts <em>any</em> another individual, i.e., the average number of
+contacts made per unit time. Then, we can estimate the change in the healthy
+population from time \( t \) to \( t+\Delta{t} \) as:
+</p>
+$$
+\begin{align}
+S(t+\Delta t)-S(t) = -\mathcal{C}(N)\cdot{\Delta t}
+\cdot{p}\cdot{q}\cdot{S(t)}\,.
+\label{_auto1}
+\end{align}
+$$
+
+<p>where \( p \) denotes the conditional probability that a given contact is between a
+susceptible and infected individual, and \( q \) is the probability that such an
+encounter leads to disease transmission.
+Because of the well-mixed condition, we can assume that \( p=I(t)/N \).
+Thus, the remaining challenge is to estimate \( \mathcal{C}(N) \) and \( q \).
+In principle, both of these parameters may vary in time, but for now we shall
+regard them as constant. By merging the two factors into a single transmission
+rate, \( \beta \), we get
+</p>
+$$
+\begin{align}
+S(t+\Delta t)-S(t) = -\beta\cdot{\Delta t}\cdot\frac{S(t)I(t)}{N}\,,
+\label{_auto2}
+\end{align}
+$$
+
+<p>Finally, by dividing by \( \Delta t \) and letting \( \Delta t \rightarrow 0 \),
+we obtain the following ordinary differential equation (ODE):
+</p>
+$$
+\begin{align}
+\label{eq:SZ_humans}
+\frac{\mathrm{d}S(t)}{\mathrm{d}t} =-\beta\cdot\frac{S(t)I(t)}{N} \,.
+\end{align}
+$$
+
+<p>Similarly, the evolution of the sick population is given by:</p>
+$$
+\begin{align}
+\label{eq:SZ_zombies}
+\frac{\mathrm{d}I(t)}{\mathrm{d}t} =+\beta\cdot\frac{S(t)I(t)}{N} \,.
+\end{align}
+$$
+
+<p>This last equation can also be derived at once from the relation \( N=S(t)+I(t) \).</p>
+
+<div class="alert alert-block alert-block alert-text-normal">
+<b><font color="blue">How to interpret \( \beta \)?</font></b>
+<p>
+
+<p><font color="blue">By saying that \( \beta \) is constant, we have several
+very strong assumptions:</font>
+</p>
+
+<ul>
+<li> <font color="blue">People make the same number of contacts regardless of the population size.</font></li>
+<li> <font color="blue">People make the same number of contacts independent of time.</font></li>
+<li> <font color="blue">The probability of becoming infected never changes.</font></li>
+</ul>
+<p><font color="blue">In reality, \( \beta \) is time-dependent,
+as it implicitly accounts for a lot of biomedical, physical, and sociological
+factors.
+For example, in the beginning of an outbreak, \( \beta \) is likely to be
+large, because people might not yet understand the severity of the situation,
+or they may be in denial. As people start to realize the danger
+and fight back against the disease, \( \beta \) will most likely decrease.
+However, as we have seen with COVID-19, new strains of the virus may appear
+and cause transmission rates to go up again.
+Another complication is that people perceive the threat from the virus very
+differently, and at least in in some countries, this seems to be influenced
+by political factors.
+</font>
+</p>
+</div>
+
+<h1 id="exercise:no_hope">Exercise 3: [OPTIONAL] Analytical solution</h1>
+
+<p>Clearly, if there are no infected individuals at time zero,
+the above equations predict that nothing will happen later either.
+We shall therefore assume that the initial number of sick is close
+to one; typically \( I_0=I(0)=1 \).
+</p>
+
+<p>
+<b>Part 1.</b>
+</p>
+
+<ul>
+<li> Show that the analytical solution to the SI-model, equations \eqref{eq:SZ_humans} and \eqref{eq:SZ_zombies}, is</li>
+</ul>
+$$
+\begin{align}
+\label{eq:SZ_analytical_sol_humans}
+S(t) &=\frac{(S_0+I_0)\frac{S_0}{I_0}\exp(-\beta{t})}{1+\frac{S_0}{I_0}\exp(-\beta{t})} \,, \\ 
+\label{eq:SZ_analytical_sol_zombies}
+I(t) &=\frac{S_0+I_0}{1+\frac{S_0}{I_0}\exp(-\beta{t})}\,,
+\end{align}
+$$
+
+<p>where \( S_0=S(0) \), and thus \( S_0+I_0=N \).</p>
+
+<p>Hint: A good way to start is to insert \( I(t)=N-S(t) \) into equation \eqref{eq:SZ_humans}.</p>
+<h1 id="exercise-4-is-the-model-any-good">Exercise 4: Is the model any good? </h1>
+
+<p>&quot;All models are wrong, but some are useful&quot; is a famous quote attributed to G. E. Box <a href="#box1976science">[5]</a>.
+The only way we can investigate if a model is useful is to compare it with data.
+Clearly, the \( SI \)-model presented above is very simple - it contains a <em>single</em> parameter, \( \beta \).
+Can the model still be useful? That is, can we use it to learn something about
+the spread of a virus, and can this insight lead to, e.g., preventive measures?
+</p>
+
+<p>
+<b>Part 1.</b>
+</p>
+
+<ul>
+<li> Make a Python function that finds the solution to both equation \eqref{eq:SZ_analytical_sol_humans} and equation \eqref{eq:SZ_analytical_sol_zombies} as a function of time.</li>
+<li> The function should not contain any hard-coded parameters.</li>
+</ul>
+<p>To be able to do this, the function need to take as input the initial condition
+as well as the desired report times at which to calculate the solutions.
+For example, one possible function signature could be:
+</p>
+
+<!-- code=python (!bc pycod) typeset with pygments style "perldoc" -->
+<div class="cell border-box-sizing code_cell rendered">
+  <div class="input">
+    <div class="inner_cell">
+      <div class="input_area">
+        <div class="highlight" style="background: #eeeedd">
+  <pre style="line-height: 125%;"><span style="color: #8B008B; font-weight: bold">def</span> <span style="color: #008b45">calc_SI_model</span>(report_times, S0, I0, beta):
+    <span style="color: #CD5555">&quot;&quot;&quot;</span>
+<span style="color: #CD5555">    :param report_times: A list or array of times at which to compute solutions.</span>
+<span style="color: #CD5555">    :param S0: The initial number of susceptible people: S0=S(0).</span>
+<span style="color: #CD5555">    :param I0: The initial number of infected people: I0=I(0).</span>
+<span style="color: #CD5555">    :param beta: The disease transmission rate.</span>
+<span style="color: #CD5555">    :return: A tuple that holds S(t) and I(t).</span>
+<span style="color: #CD5555">    &quot;&quot;&quot;</span>
+    <span style="color: #8B008B; font-weight: bold">pass</span>  <span style="color: #228B22"># Type your code here...</span>
+</pre>
+</div>
+      </div>
+    </div>
+  </div>
+  <div class="output_wrapper">
+    <div class="output">
+      <div class="output_area">
+        <div class="output_subarea output_stream output_stdout output_text">          
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p>The string surrounded by triple quotes which immediately follows the function
+definition is an example of a <a href="https://peps.python.org/pep-0257/" target="_self">docstring</a>.
+It is regarded as <a href="https://realpython.com/documenting-python-code/" target="_self">good practice</a>
+to document your (non-obvious) Python functions with docstrings.
+This way, users of your code may easily learn about how the function is
+supposed to work by typing <code>help(name_of_function)</code>.
+</p>
+
+<p>Assuming we finished implementing the above function, it can be invoked like this:</p>
+
+<!-- code=python (!bc pycod) typeset with pygments style "perldoc" -->
+<div class="cell border-box-sizing code_cell rendered">
+  <div class="input">
+    <div class="inner_cell">
+      <div class="input_area">
+        <div class="highlight" style="background: #eeeedd">
+  <pre style="line-height: 125%;">St, It = calc_SI_model(report_times, S0, I0, beta)
+<span style="color: #228B22"># Continue to use St and It in the code below...</span>
+</pre>
+</div>
+      </div>
+    </div>
+  </div>
+  <div class="output_wrapper">
+    <div class="output">
+      <div class="output_area">
+        <div class="output_subarea output_stream output_stdout output_text">          
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p>
+<b>Part 2.</b>
+</p>
+
+<ul>
+<li> Make an example figure where you plot the analytical solution to the \( SI \)-model together with the actual number of confirmed cases observed for a given country (in the same figure).</li>
+<li> Try to re-use the functions you made earlier when you do this (to do so, you may find that you have to change something).</li>
+</ul>
+<p>
+<b>Part 3.</b>
+</p>
+
+<p>Let us first consider the Hubei province in China where the city of Wuhan is located.</p>
+
+<ul>
+<li> Assume for simplicity that \( I_0=1 \). Adjust \( S_0 \) and \( \beta \) to investigate whether it is possible to match the reported number of confirmed cases in Hubei with the \( SI \) model.</li>
+</ul>
+<p>
+<b>Part 4.</b>
+</p>
+
+<p>In the database there are also data from the Corona virus outbreak aboard the cruise ship &quot;Diamond Princess&quot;.
+There were 3711 people on the ship, of which 712 were infected <a href="#WikiDiamondPrincess">[6]</a>.
+</p>
+
+<ul>
+<li> Let \( S_0=711 \) and \( I_0=1 \). Run the SI-model with the same \( \beta \) value you found for Hubei. What do you observe? (You should be able to generate curves similar to the ones shown in figure <a href="#fig:hd">4</a>).</li>
+</ul>
+<p>
+<b>Part 5.</b>
+</p>
+
+<ul>
+<li> Do the same for Norway. Which value of \( \beta \) do you need to use in order to find a reasonable match for Norway?</li>
+<li> Does the model fit the data better or worse in this case than it did for Hubei?</li>
+</ul>
+<center> <!-- figure label: --> <div id="fig:hd"></div> <!-- FIGURE -->
+<hr class="figure">
+<center>
+<p class="caption">Figure 4: COVID-19 data (black circles) and model (red, solid lines) for Hubei and Diamond Princess.  <!-- caption label: fig:hd --></p>
+</center>
+<p><img src="fig-covid19/hubei_diamond_princess.png" align="bottom"></p>
+</center>
+
+<h1 id="exercise-5-extending-the-model">Exercise 5: Extending the model </h1>
+
+<p>When doing exercise 4 you might have noticed that the \( SI \)-model
+works quite well in situations where the disease initially spreads quickly,
+and then stabilizes.
+However, a clear weakness with our approach is that we tuned the number \( S_0 \) to
+the data, essentially setting it equal to the final number of confirmed cases.
+In reality, \( S_0 \) should be the total population of a country, or at
+least the total number of people in a city where there is a large outbreak.
+In just Wuhan there are 11 million people, and in the entire Hubei province
+there are 58.5 million people. Setting \( S_0 \) to 11 or 58.5 million would not
+work in the model, though, because that would greatly exaggerate the number of infected people.
+</p>
+
+<p>There are several shortcomings with the model. One obvious problem is
+our assumption about a constant disease transmission rate, \( \beta \), which
+results in the model predicting that everyone who is susceptible will be infected eventually.
+In many countries, including China, drastic counter-measures were taken once
+the spread of the virus became widely known, which means that \( \beta \) should
+decrease as a function of time.
+To capture this behavior, and thus create a slightly more realistic model,
+we will now assume that \( \beta \) declines exponentially:
+</p>
+$$
+\begin{equation}
+\beta(t)=\beta_0 e^{-\lambda t}.
+\label{eq:p3:betaT}
+\end{equation}
+$$
+
+
+<div class="alert alert-block alert-notice alert-text-normal">
+<b>Analytical solution for the extended SI-model</b>
+<p>
+
+<p>It turns out that we can still use equations \eqref{eq:SZ_analytical_sol_humans}
+and \eqref{eq:SZ_analytical_sol_zombies} to compute the analytical solution,
+provided we replace the product of of the constant \( \beta \)-parameter and time
+as follows:
+</p>
+$$
+\begin{equation}
+\beta t \to \int_0^t\beta_0e^{-\lambda t}dt=\frac{\beta_0}{\lambda}(1-e^{-\lambda t}).
+\label{eq:l}
+\end{equation}
+$$
+
+<p>In the above expression, \( \beta_0=\beta(0) \) is the initial disease transmission
+rate. The magnitude of the factor \( \lambda \) determines how fast \( \beta \) decreases,
+i.e., a high value indicates strong disease-prevention measures.
+</p>
+</div>
+
+
+<p>
+<b>Part 1.</b>
+</p>
+
+<ul>
+<li> Make a function that plots the number of confirmed cases for a given country, as well as the extended analytical solution with \( \beta_0 \) and \( \lambda \) as input parameters.</li>
+</ul>
+<p>Tip: Instead of creating a completely new function, you might want to modify your previous one to always use both \( \beta \) and \( \lambda \) as input arguments, but let \( \lambda=0 \) by default (this way, the code stays <a href="https://en.wikipedia.org/wiki/Backward_compatibility" target="_self">backwards-compatible</a>).</p>
+
+<!--  -->
+<!-- Population data can be found in the <code>data</code> folder. -->
+<!--  -->
+
+<p>
+<b>Part 2.</b>
+</p>
+
+<ul>
+<li> Tune \( \lambda \) and \( \beta_0 \) to match the Hubei data. This is quite difficult, but one strategy is to first adjust \( \beta_0 \) to match the initial rise in the confirmed cases (For Hubei, a value for \( \beta_0 \) close to 2 gives a decent match). Next, adjust \( \lambda \) to match the data.</li>
+</ul>
+<p>Tip: If/when you have time, it is worth familiarizing yourself with some of the existing Python functions to do curve-fitting, e.g.,  <a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html" target="_self"><tt>scipy.optimize.curve_fit</tt></a>. This will become very useful later in the course.</p>
+
+<p>
+<b>Part 3.</b>
+</p>
+
+<ul>
+<li> Use the \( \beta- \) and \( \lambda- \) values you found for Hubei to predict the disease outbreak in Norway (You need to reduce \( S_0 \) to 5.4 million, which is the population of Norway). What do you observe? Do the results match your expectations?</li>
+</ul>
+<p>
+<b>Part 4.</b>
+</p>
+
+<ul>
+<li> How do you need to change \( \lambda \) and \( \beta \) to improve the match for Norway? If we assume that the value of \( \lambda \) represents the government response, do the different values (\( \lambda_\text{Norway} \), \( \lambda_\text{Hubei} \)) match your expectations?</li>
+</ul>
+<p>
+<b>Part 5.</b>
+</p>
+
+<ul>
+<li> In light of what has happened during the entire course of the pandemic, write a paragraph or two where you reflect on the challenges with modelling disease outbreaks. Are there any important aspects that we have not touched upon in this project?</li>
+</ul>
+<h1 id="bibliography">Bibliography </h1>
+
+<!-- begin bibliography -->
+<ol>
+ <li> <div id="xiao2021animal"></div> <b>X. Xiao, C. Newman, C. D. Buesching, D. W. Macdonald and Z.-M. Zhou</b>.  Animal Sales From Wuhan Wet Markets Immediately Prior to the COVID-19 Pandemic, <em>Scientific reports</em>, 11(1), pp. 1-7, 2021.</li>
+ <li> <div id="pekar2022molecular"></div> <b>J. E. Pekar, A. Magee, E. Parker, N. Moshiri, K. Izhikevich, J. L. Havens, K. Gangavarapu, L. M. M. Serrano, A. Crits-Christoph, N. L. Matteson et al.</b>.  The Molecular Epidemiology of Multiple Zoonotic Origins of SARS-CoV-2, <em>Science</em>, pp. eabp8337, 2022.</li>
+ <li> <div id="worobey2022huanan"></div> <b>M. Worobey, J. I. Levy, L. M. Serrano, A. Crits-Christoph, J. E. Pekar, S. A. Goldstein, A. L. Rasmussen, M. U. Kraemer, C. Newman, M. P. Koopmans et al.</b>.  The Huanan Seafood Wholesale Market in Wuhan Was the Early Epicenter of the COVID-19 Pandemic, <em>Science</em>, pp. abp8715, 2022.</li>
+ <li> <div id="kermack1927contribution"></div> <b>W. O. Kermack and A. G. McKendrick</b>.  A Contribution to the Mathematical Theory of Epidemics, Part I, <em>Proceedings of the Royal Society of London. Series A, Containing papers of a mathematical and physical character</em>, 115(772), pp. 700-721, 1927.</li>
+ <li> <div id="box1976science"></div> <b>G. E. Box</b>.  Science and Statistics, <em>Journal of the American Statistical Association</em>, 71(356), pp. 791-799, 1976.</li>
+ <li> <div id="WikiDiamondPrincess"></div> <b>Wikipedia</b>.  COVID-19 Pandemic on Diamond Princess, 2021, Accessed: 2022-08-13, <a href="https://en.wikipedia.org/wiki/COVID-19_pandemic_on_Diamond_Princess" target="_self"><tt>https://en.wikipedia.org/wiki/COVID-19_pandemic_on_Diamond_Princess</tt></a>.</li>
+</ol>
+<!-- end bibliography -->
+<!-- ------------------- end of main content --------------- -->
+</body>
+</html>
+

@@ -1,12 +1,17 @@
-# UiS DATPREP - COVID-19 Project
+# UiS DATPREP: COVID-19 project
 
-In this project we are modelling the first 250 days of the Corona outbreak. The model we are using are the simplest possible model, and you are encouraged to reflect on the limitations. All modelling projects consists (usually) of two parts, the first part is to get an overview of the data, and the second part is to develop a suitable model that can be compared or tuned to parts of the data.
- 
+In this introductory project we are modelling the first 250 days of the Corona
+virus (SARS-CoV-2) outbreak.
+The model we are going to use is probably the simplest one possible,
+and you are encouraged to keep this in mind as you reflect on what the model
+can, and cannot, say.
+
+All later projects in the course MOD510 will look very much like this one.
+Therefore, working on this project should give you a good start.
+
 ## Learning objectives
-
 By completing this project, the student will:
-
-- Learn to import data into pandas
-- Write simple functions to generate plots, and inspect data visually
-- Constrain model parameters by comparing with data
-- Use a model to interpret data, and reflect on strength and weakness of the approach
+* Learn to import data into "pandas":"https://pandas.pydata.org" DataFrames.
+* Write simple functions to generate plots, and inspect data visually.
+* Constrain model parameters by comparing model output with data.
+* Reflect on strengths and weaknesses of simple models for complex phenomena.
